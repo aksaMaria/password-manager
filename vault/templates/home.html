@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            text-align: center;
+            padding-top: 100px;
+        }
+
+        .container {
+            background-color: white;
+            max-width: 500px;
+            margin: auto;
+            padding: 35px;
+            border-radius: 12px;
+        }
+
+        h1 {
+            color: #334155;
+        }
+
+        p {
+            color: #64748b;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #4f46e5;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    
+<div class="container">
+    <h1>Password Manager</h1>
+
+    {% if user.is_authenticated %}
+        <p>Welcome, {{ user.username }}!</p>
+        <a href="/logout/" class="button">Logout</a>
+    {% else %}
+        <p>Securely organize your digital accounts in one place.</p>
+        <a href="/login/" class="button">Login</a>
+        <a href="/register/" class="button">Register</a>
+    {% endif %}
+</div>
+
+</body>
+</html>
