@@ -1,127 +1,66 @@
-# Password Manager 🔐
+# Django Password Manager
 
-A simple password manager project designed to help users organize and manage their passwords in one place.
+A web-based Password Manager developed using Python and Django. It allows users to securely store, manage, and organize their account credentials.
 
-## 📌 About the Project
+## Features
 
-The Password Manager is a software project focused on making password management easier. It provides a foundation for storing and managing password-related information through an application built with Python and Django.
+- User registration and login
+- Secure password encryption using Fernet
+- Add and save account credentials
+- View and reveal saved passwords
+- Edit and delete saved accounts
+- Mark accounts as favourites
+- Search by website or username
+- Filter accounts by category
+- User-specific password vault
+- Django admin panel
 
-This project is also useful for learning about web application development, database management, and user data handling.
+## Technologies Used
 
-## ✨ Features
+- Python
+- Django
+- HTML
+- CSS
+- SQLite
+- Cryptography (Fernet)
+- python-dotenv
 
-- Password management in one place
-- Organized project structure using Django
-- Database integration with SQLite
-- Python-based application
-- Simple foundation for further development
+## Installation and Setup
 
-*Features depend on the current implementation of the project.*
+1. Clone the repository:
 
-## 🛠️ Technologies Used
+   `git clone YOUR_REPOSITORY_URL`
 
-- **Python** — Application logic
-- **Django** — Web application framework
-- **SQLite** — Database
-- **HTML, CSS and JavaScript** — User interface, if included in the application
+2. Navigate into the project folder:
 
-## 📂 Project Structure
+   `cd PasswordManager`
 
-```text
-password-manager/
-├── config/       # Project configuration
-├── vault/        # Password manager application
-├── db.sqlite3    # SQLite database
-└── manage.py     # Django management script
-```
+3. Install the required packages:
 
-## 🚀 Getting Started
+   `py -m pip install -r requirements.txt`
 
-### Prerequisites
+4. Create a `.env` file in the project root and add your own Fernet encryption key:
 
-Make sure you have the following installed:
+   `PASSWORD_ENCRYPTION_KEY=YOUR_GENERATED_KEY`
 
-- Python 3.10 or later
-- pip
-- Git
+   Generate a key locally using Fernet's `generate_key()` function. Never share or upload your actual key.
 
-### Installation
+5. Apply database migrations:
 
-**1. Clone the repository**
+   `py manage.py migrate`
 
-```bash
-git clone https://github.com/aksaMaria/password-manager.git
-```
+6. Start the development server:
 
-**2. Navigate to the project directory**
+   `py manage.py runserver`
 
-```bash
-cd password-manager
-```
+7. Open `http://127.0.0.1:8000/` in your browser.
 
-**3. Create a virtual environment**
+## Security Note
 
-```bash
-python -m venv venv
-```
+This project is developed for educational and demonstration purposes. Do not use it to store real or sensitive passwords without a thorough security review.
 
-**4. Activate the virtual environment**
+Keep your `.env` file and encryption key private. Losing the encryption key means encrypted passwords cannot be recovered.
 
-Windows:
+## Developer
 
-```bash
-venv\Scripts\activate
-```
-
-macOS/Linux:
-
-```bash
-source venv/bin/activate
-```
-
-**5. Install dependencies**
-
-If a `requirements.txt` file is available:
-
-```bash
-pip install -r requirements.txt
-```
-
-**6. Apply database migrations**
-
-```bash
-python manage.py migrate
-```
-
-**7. Start the development server**
-
-```bash
-python manage.py runserver
-```
-
-Open the following address in your browser:
-
-http://127.0.0.1:8000/
-
-## 🔒 Security Note
-
-Password managers handle sensitive information. Do not store real passwords in an unverified or untrusted application. Review the project's authentication, password storage, and encryption mechanisms before using it for personal credentials.
-
-## 🔮 Future Improvements
-
-- Password generation
-- Search and filter options
-- Password strength checking
-- Improved authentication
-- Secure password encryption
-- Responsive user interface
-
-## 👩‍💻 Author
-
-**aksaMaria**
-
-GitHub: [@aksaMaria](https://github.com/aksaMaria)
-
-## 📄 License
-
-No license information has been specified here. Check the repository for licensing details before redistributing or modifying the project.
+Developed as an academic project using Python and Django.
