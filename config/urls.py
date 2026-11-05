@@ -11,10 +11,7 @@ urlpatterns = [
     path("save/", views.save_password, name="save_password"),
     path("vault/", views.vault_list, name="vault_list"),
 path("vault/<int:pk>/reveal/", views.reveal_password, name="reveal_password"),
-<<<<<<< HEAD
 path("vault/<int:pk>/edit/", views.edit_password, name="edit_password"),
 path("vault/<int:pk>/favorite/", views.toggle_favorite, name="toggle_favorite"),
-=======
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
 path("vault/<int:pk>/delete/", views.delete_password, name="delete_password"),
 ]
