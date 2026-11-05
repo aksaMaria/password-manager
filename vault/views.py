@@ -1,19 +1,14 @@
-<<<<<<< HEAD
 import time
 from collections import Counter
 
-=======
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-<<<<<<< HEAD
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
-=======
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
+
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.cache import never_cache
@@ -21,10 +16,8 @@ from django.views.decorators.http import require_POST
 from cryptography.fernet import Fernet, InvalidToken
 
 from .models import SavedPassword
-<<<<<<< HEAD
+
 from .utils import password_strength
-=======
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
 
 
 def home(request):
@@ -82,7 +75,6 @@ def logout_view(request):
     return redirect("home")
 
 
-<<<<<<< HEAD
 MASTER_MAX_FAILS = 5      # wrong master-password tries allowed...
 MASTER_WINDOW = 300       # ...within this many seconds
 EDIT_UNLOCK_SECONDS = 300  # how long an unlocked edit page stays valid
@@ -123,8 +115,6 @@ def check_master_password(request):
     return "Wrong master password.", 403
 
 
-=======
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
 def encrypt_password(plain):
     # settings.VAULT_ENCRYPTION_KEY must be a Fernet key.
     return Fernet(settings.VAULT_ENCRYPTION_KEY).encrypt(plain.encode()).decode()
@@ -136,34 +126,27 @@ def save_password(request):
     website = request.POST.get("website", "").strip()
     username = request.POST.get("username", "").strip()
     password = request.POST.get("password", "")
-<<<<<<< HEAD
     url = clean_url(request.POST.get("url", ""))
-=======
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
+
 
     if not (website and username and password):
         messages.error(request, "Website, username, and password are required.")
         return redirect("home")
-<<<<<<< HEAD
     if url is None:
         messages.error(request, "That site URL doesn't look valid.")
         return redirect("home")
-=======
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
 
     SavedPassword.objects.create(
         user=request.user,
         website=website,
-<<<<<<< HEAD
         url=url,
         username=username,
         encrypted_password=encrypt_password(password),
         category=request.POST.get("category", "").strip() or "Other",
-=======
+
         username=username,
         encrypted_password=encrypt_password(password),
         category=request.POST.get("category", "").strip(),
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
         notes=request.POST.get("notes", "").strip(),
         is_favorite="is_favorite" in request.POST,
     )
@@ -177,7 +160,6 @@ def decrypt_password(token):
 
 @login_required
 def vault_list(request):
-<<<<<<< HEAD
     entries = list(
         SavedPassword.objects.filter(user=request.user).order_by("-is_favorite", "website")
     )
@@ -201,12 +183,10 @@ def vault_list(request):
         "weak": sum(1 for e in entries if e.is_weak),
     }
     return render(request, "my_vault.html", {"entries": entries, "summary": summary})
-=======
     entries = SavedPassword.objects.filter(user=request.user).order_by(
         "-is_favorite", "website"
     )
     return render(request, "my_vault.html", {"entries": entries})
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
 
 
 @login_required
@@ -214,12 +194,9 @@ def vault_list(request):
 @never_cache
 def reveal_password(request, pk):
     entry = get_object_or_404(SavedPassword, pk=pk, user=request.user)
-<<<<<<< HEAD
     problem = check_master_password(request)
     if problem:
         return JsonResponse({"error": problem[0]}, status=problem[1])
-=======
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
     try:
         return JsonResponse({"password": decrypt_password(entry.encrypted_password)})
     except InvalidToken:
@@ -230,7 +207,6 @@ def reveal_password(request, pk):
 
 
 @login_required
-<<<<<<< HEAD
 @never_cache
 def edit_password(request, pk):
     entry = get_object_or_404(SavedPassword, pk=pk, user=request.user)
@@ -291,8 +267,6 @@ def toggle_favorite(request, pk):
 
 
 @login_required
-=======
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
 @require_POST
 def delete_password(request, pk):
     entry = get_object_or_404(SavedPassword, pk=pk, user=request.user)
