@@ -126,3 +126,17 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+# Where @login_required sends people who aren't signed in
+LOGIN_URL = "login"
+
+# Encryption key for saved passwords: use an environment variable if set,
+# otherwise create and reuse a local key file next to manage.py.
+import os
+from cryptography.fernet import Fernet
+
+VAULT_ENCRYPTION_KEY = os.environ.get("VAULT_ENCRYPTION_KEY")
+if not VAULT_ENCRYPTION_KEY:
+    _key_file = BASE_DIR / "vault.key"
+    if not _key_file.exists():
+        _key_file.write_text(Fernet.generate_key().decode())
+    VAULT_ENCRYPTION_KEY = _key_file.read_text().strip()

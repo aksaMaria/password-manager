@@ -1,83 +1,24 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Password Manager</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f3f4f6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-
-        .container {
-            background: white;
-            padding: 35px;
-            border-radius: 12px;
-            width: 320px;
-        }
-
-        h1 {
-            text-align: center;
-            color: #334155;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            box-sizing: border-box;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #4f46e5;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        p {
-            text-align: center;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="container">
-        <h1>Login</h1>
-        
-{% if messages %}
-    {% for message in messages %}
-        <p>{{ message }}</p>
-    {% endfor %}
-{% endif %}
-
-
-        <form method="POST">
-            {% csrf_token %}
-
-            <input type="text" name="username"
-                   placeholder="Enter username" required>
-
-            <input type="password" name="password"
-                   placeholder="Enter password" required>
-
-            <button type="submit">Login</button>
-        </form>
-
-        <p>Don't have an account?
-            <a href="/register/">Register here</a>
-        </p>
-    </div>
-</body>
-</html>
+{% extends "base.html" %}
+{% comment %} Save as: vault/templates/registration/login.html {% endcomment %}
+{% block title %}Sign in · BitVault{% endblock %}
+{% block content %}
+<div class="wrap auth">
+  <svg class="lock" viewBox="0 0 400 400" role="img" aria-label="Combination dial"><circle cx="200" cy="200" r="190" fill="#14202b"/><g id="ring" transform="rotate(35 200 200)"></g><circle cx="200" cy="200" r="112" fill="#1d2e3f" stroke="#33495f" stroke-width="2"/><text x="200" y="198" text-anchor="middle" font-family="Schibsted Grotesk,sans-serif" font-size="34" font-weight="700" fill="#fff">Locked</text><text x="200" y="228" text-anchor="middle" font-family="Schibsted Grotesk,sans-serif" font-size="15" fill="#aab5c0">Sign in to open</text><path d="M200 44 L190 14 L210 14 Z" fill="#b07d1e"/></svg>
+  <div>
+    <h1>Sign in to your vault</h1>
+    <p class="muted" style="margin:0 0 1.75rem">Use your username and master password.</p>
+    <form class="card" method="post" action="">
+      {% csrf_token %}
+      {% if form.errors %}<p class="alert error" role="alert">That username and password don't match. Check both and try again.</p>{% endif %}
+      <div class="field"><label for="id_username">Username</label>
+        <input type="text" name="username" id="id_username" autocomplete="username" autofocus required></div>
+      <div class="field"><label for="id_password">Password</label>
+        <div class="pwrow"><input type="password" name="password" id="id_password" autocomplete="current-password" required>
+        <button class="btn ghost sm" type="button" id="showPw" aria-pressed="false">Show</button></div></div>
+      <button class="btn block" type="submit">Sign in</button>
+      {% url 'register' as register_url %}{% if register_url %}<p class="alt">New to BitVault? <a href="{{ register_url }}">Create your vault</a></p>{% endif %}
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block js %}<script>bvTicks(document.getElementById("ring"));bvToggle(document.getElementById("showPw"),[document.getElementById("id_password")]);</script>{% endblock %}

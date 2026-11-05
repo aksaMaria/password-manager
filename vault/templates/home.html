@@ -1,58 +1,137 @@
+{% extends "base.html" %}
+{% comment %} Save as: home.html {% endcomment %}
+{% block title %}BitVault: your passwords, in one place{% endblock %}
+{% block css %}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:4rem;align-items:center;padding-block:4.5rem}
+.hero h1{font-size:clamp(2.4rem,5vw,4rem);margin-bottom:1.25rem}
+.hero .lede{font-size:1.15rem;color:var(--mute);max-width:32rem;margin:0 0 2rem}
+.actions{display:flex;gap:.75rem;flex-wrap:wrap}
+.gen{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:1.5rem}
+.gen .dial{width:200px;display:block;margin:0 auto 1.25rem}
+#ring{transform-origin:200px 200px;transition:transform 1s cubic-bezier(.2,.8,.2,1)}
+.out{display:flex;gap:.5rem;margin-bottom:1rem}
+.out input{flex:1;min-width:0;padding:.65rem .8rem;border:1px solid var(--line);border-radius:6px;background:#f6f7f8;font:500 .95rem var(--mono);color:var(--ink)}
+.row{display:flex;align-items:center;gap:1rem;margin-bottom:.9rem;font-size:.95rem}
+.row input{flex:1;accent-color:var(--ink)}
+.row output{min-width:2ch;font-variant-numeric:tabular-nums;text-align:right}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1.2rem;font-size:.95rem}
+.checks label{display:flex;gap:.5rem;align-items:center;cursor:pointer}.checks input{accent-color:var(--ink)}
+#msg{min-height:1.4rem;margin:.6rem 0 0;font-size:.9rem;color:var(--mute)}#msg.error{color:var(--err)}
+.save{padding-block:1rem 5rem}
+.save-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:4rem;align-items:start}
+.save h2{font-size:clamp(1.8rem,3.5vw,2.5rem);margin-bottom:.75rem}
+.form{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:1.75rem;display:grid;grid-template-columns:1fr 1fr;gap:0 1rem}
+.form .wide{grid-column:1/-1}
+.form .field.pin{justify-content:center}
+.form .pin label{display:flex;gap:.5rem;align-items:center;font-weight:400;cursor:pointer}
+.form .pin input{accent-color:var(--ink)}
+.note{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:1.75rem}
+.note p{margin:0 0 1rem}
+@media(max-width:820px){.hero,.save-grid{grid-template-columns:1fr;gap:2rem}.hero{padding-block:2rem}.form{grid-template-columns:1fr}}
+{% endblock %}
+{% block content %}
+<section class="wrap hero">
+  <div>
+    <h1>One master password. Every login, kept in one place.</h1>
+    <p class="lede">BitVault stores your site logins so you only have to remember a single password. Try the generator to see how strong a new one can be.</p>
+    <div class="actions">
+      {% if user.is_authenticated %}
+        <a class="btn" href="#save">Save a password</a>
+        {% if vault_url %}<a class="btn ghost" href="{{ vault_url }}">Open my vault</a>{% endif %}
+      {% else %}
+        {% if register_url %}<a class="btn" href="{{ register_url }}">Create your vault</a>{% endif %}
+        {% if login_url %}<a class="btn ghost" href="{{ login_url }}">Sign in</a>{% endif %}
+      {% endif %}
+    </div>
+  </div>
+  <div class="gen">
+    <svg class="dial" viewBox="0 0 400 400" role="img" aria-label="Dial showing the strength of the generated password">
+      <circle cx="200" cy="200" r="190" fill="#14202b"/><g id="ring"></g>
+      <circle cx="200" cy="200" r="112" fill="#1d2e3f" stroke="#33495f" stroke-width="2"/>
+      <text id="bits" x="200" y="205" text-anchor="middle" font-family="Schibsted Grotesk,sans-serif" font-size="60" font-weight="700" fill="#fff">0</text>
+      <text id="strength" x="200" y="238" text-anchor="middle" font-family="Schibsted Grotesk,sans-serif" font-size="15" fill="#aab5c0">bits of entropy</text>
+      <path d="M200 44 L190 14 L210 14 Z" fill="#b07d1e"/>
+    </svg>
+    <label for="pw" style="font-size:.9rem;font-weight:500">Generated password</label>
+    <div class="out" style="margin-top:.35rem"><input id="pw" type="text" readonly spellcheck="false" autocomplete="off"><button class="btn ghost sm" id="copy" type="button">Copy</button></div>
+    <div class="row"><label for="len">Length</label><input id="len" type="range" min="8" max="40" value="20"><output id="lenOut" for="len">20</output></div>
+    <div class="checks">
+      <label><input type="checkbox" id="lower" checked> Lowercase</label>
+      <label><input type="checkbox" id="upper" checked> Uppercase</label>
+      <label><input type="checkbox" id="nums" checked> Numbers</label>
+      <label><input type="checkbox" id="syms" checked> Symbols</label>
+    </div>
+    <button class="btn block" id="go" type="button">Generate new password</button>
+    <p id="msg" role="status" aria-live="polite"></p>
+  </div>
+</section>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Manager</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f3f4f6;
-            text-align: center;
-            padding-top: 100px;
-        }
-
-        .container {
-            background-color: white;
-            max-width: 500px;
-            margin: auto;
-            padding: 35px;
-            border-radius: 12px;
-        }
-
-        h1 {
-            color: #334155;
-        }
-
-        p {
-            color: #64748b;
-        }
-
-        .button {
-            display: inline-block;
-            background-color: #4f46e5;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 6px;
-            text-decoration: none;
-        }
-    </style>
-</head>
-<body>
-    
-<div class="container">
-    <h1>Password Manager</h1>
-
+<section class="wrap save" id="save">
+  <div class="save-grid">
+    <div>
+      <h2>Save a password</h2>
+      <p class="muted">Add the site, your username and the password. Use the generator to fill in a strong one.</p>
+    </div>
     {% if user.is_authenticated %}
-        <p>Welcome, {{ user.username }}!</p>
-        <a href="/logout/" class="button">Logout</a>
+    <form class="form" method="post" action="{% url 'save_password' %}" autocomplete="off">
+      {% csrf_token %}
+      <div class="field"><label for="id_website">Website</label><input type="text" id="id_website" name="website" maxlength="100" placeholder="example.com" required></div>
+      <div class="field"><label for="id_username">Username or email</label><input type="text" id="id_username" name="username" maxlength="150" required></div>
+      <div class="field wide"><label for="id_password">Password</label>
+        <div class="pwrow"><input type="password" id="id_password" name="password" autocomplete="new-password" required>
+        <button class="btn ghost sm" type="button" id="showPw" aria-pressed="false">Show</button>
+        <button class="btn ghost sm" type="button" id="useGen">Use generated</button></div></div>
+      <div class="field"><label for="id_category">Category</label><input type="text" id="id_category" name="category" maxlength="50" list="cats" placeholder="Social, Banking, Work">
+        <datalist id="cats"><option value="Social"><option value="Banking"><option value="Work"><option value="Shopping"><option value="Email"></datalist></div>
+      <div class="field pin"><label><input type="checkbox" name="is_favorite"> Pin to the top of my vault</label></div>
+      <div class="field wide"><label for="id_notes">Notes</label><textarea id="id_notes" name="notes" placeholder="Optional"></textarea></div>
+      <div class="wide"><button class="btn" type="submit">Save password</button></div>
+    </form>
     {% else %}
-        <p>Securely organize your digital accounts in one place.</p>
-        <a href="/login/" class="button">Login</a>
-        <a href="/register/" class="button">Register</a>
+    <div class="note"><p>Sign in to save passwords to your vault.</p>
+      <div class="actions">
+        {% if login_url %}<a class="btn" href="{{ login_url }}">Sign in</a>{% endif %}
+        {% if register_url %}<a class="btn ghost" href="{{ register_url }}">Create your vault</a>{% endif %}
+      </div></div>
     {% endif %}
-</div>
-
-</body>
-</html>
+  </div>
+</section>
+{% endblock %}
+{% block js %}
+<script>
+(function(){
+  var SETS={lower:"abcdefghijklmnopqrstuvwxyz",upper:"ABCDEFGHIJKLMNOPQRSTUVWXYZ",nums:"0123456789",syms:"!@#$%^&*()-_=+[]{};:,.?"};
+  var $=function(i){return document.getElementById(i)},ring=$("ring"),angle=0;
+  bvTicks(ring);
+  function randInt(n){var max=Math.floor(0x100000000/n)*n,b=new Uint32Array(1);do{crypto.getRandomValues(b)}while(b[0]>=max);return b[0]%n}
+  function selected(){return Object.keys(SETS).filter(function(k){return $(k).checked})}
+  function build(len,keys){
+    var pool=keys.map(function(k){return SETS[k]}).join(""),out;
+    do{out="";for(var i=0;i<len;i++)out+=pool.charAt(randInt(pool.length))}
+    while(!keys.every(function(k){return out.split("").some(function(c){return SETS[k].indexOf(c)!==-1})}));
+    return{text:out,bits:Math.round(len*Math.log2(pool.length))};
+  }
+  function label(b){return b<50?"Weak":b<70?"Fair":b<100?"Strong":"Very strong"}
+  function generate(){
+    var keys=selected(),msg=$("msg");
+    if(!keys.length){msg.textContent="Select at least one character type.";msg.className="error";return}
+    msg.textContent="";msg.className="";
+    var r=build(+$("len").value,keys);
+    $("pw").value=r.text;$("bits").textContent=r.bits;
+    $("strength").textContent=label(r.bits)+" · bits of entropy";
+    angle+=120+randInt(240);ring.style.transform="rotate("+angle+"deg)";
+  }
+  $("go").addEventListener("click",generate);
+  $("len").addEventListener("input",function(){$("lenOut").textContent=this.value;generate()});
+  ["lower","upper","nums","syms"].forEach(function(i){$(i).addEventListener("change",generate)});
+  $("copy").addEventListener("click",function(){
+    var v=$("pw").value,msg=$("msg");if(!v)return;
+    (navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(function(){msg.className="";msg.textContent="Copied to clipboard."},
+    function(){$("pw").select();msg.className="error";msg.textContent="Couldn't copy automatically. Press Ctrl+C to copy."});
+  });
+  var useGen=$("useGen"),pf=$("id_password");
+  if(useGen&&pf){useGen.addEventListener("click",function(){pf.value=$("pw").value;pf.focus()});bvToggle($("showPw"),[pf])}
+  generate();
+})();
+</script>
+{% endblock %}
