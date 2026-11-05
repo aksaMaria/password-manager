@@ -12,10 +12,9 @@ class SavedPassword(models.Model):
         on_delete=models.CASCADE
     )
     website = models.CharField(max_length=100)
-<<<<<<< HEAD
+
     url = models.URLField(max_length=300, blank=True)
-=======
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
+
     username = models.CharField(max_length=150)
     encrypted_password = models.TextField()
     category = models.CharField(max_length=50, default="Other")
