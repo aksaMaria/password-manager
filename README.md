@@ -64,3 +64,4 @@ Keep your `.env` file and encryption key private. Losing the encryption key mean
 ## Developer
 
 Developed as an academic project using Python and Django.
+## TEST
