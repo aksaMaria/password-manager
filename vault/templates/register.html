@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% comment %} Save as: vault/templates/registration/register.html (works with register_view: username, password, confirm_password) {% endcomment %}
+{% block title %}Create your vault · BitVault{% endblock %}
+{% block content %}
+<div class="wrap auth">
+  <svg class="lock" viewBox="0 0 400 400" role="img" aria-label="Combination dial"><circle cx="200" cy="200" r="190" fill="#14202b"/><g id="ring" transform="rotate(95 200 200)"></g><circle cx="200" cy="200" r="112" fill="#1d2e3f" stroke="#33495f" stroke-width="2"/><text x="200" y="198" text-anchor="middle" font-family="Schibsted Grotesk,sans-serif" font-size="34" font-weight="700" fill="#fff">New vault</text><text x="200" y="228" text-anchor="middle" font-family="Schibsted Grotesk,sans-serif" font-size="15" fill="#aab5c0">Choose a master password</text><path d="M200 44 L190 14 L210 14 Z" fill="#b07d1e"/></svg>
+  <div>
+    <h1>Create your vault</h1>
+    <p class="muted" style="margin:0 0 1.75rem">One master password opens everything. Make it long, and don't reuse it anywhere else.</p>
+    <form class="card" method="post" action="">
+      {% csrf_token %}
+      <div class="field"><label for="id_username">Username</label>
+        <input type="text" name="username" id="id_username" autocomplete="username" autofocus required></div>
+      <div class="field"><label for="id_password">Master password</label>
+        <div class="pwrow"><input type="password" name="password" id="id_password" autocomplete="new-password" required>
+        <button class="btn ghost sm" type="button" id="showPw" aria-pressed="false">Show</button></div></div>
+      <div class="field"><label for="id_confirm_password">Confirm password</label>
+        <input type="password" name="confirm_password" id="id_confirm_password" autocomplete="new-password" required></div>
+      <button class="btn block" type="submit">Create vault</button>
+      {% url 'login' as login_url %}{% if login_url %}<p class="alt">Already have a vault? <a href="{{ login_url }}">Sign in</a></p>{% endif %}
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block js %}<script>bvTicks(document.getElementById("ring"));bvToggle(document.getElementById("showPw"),[document.getElementById("id_password"),document.getElementById("id_confirm_password")]);</script>{% endblock %}

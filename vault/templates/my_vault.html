@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% comment %}
+  Vault list page. Save as: vault/templates/vault/my_vault.html
+  Expects a list of saved entries in the context as "passwords" or "entries".
+  Each entry: website, username, password, category, notes, is_favorite, pk.
+  Delete uses a URL named delete_password (takes the entry pk); the button is hidden if that name doesn't exist.
+{% endcomment %}
+{% block title %}My vault · BitVault{% endblock %}
+{% block css %}
+.head{display:flex;justify-content:space-between;align-items:end;gap:1rem;flex-wrap:wrap;padding-block:3rem 1.5rem}
+.head h1{font-size:clamp(2rem,4vw,3rem)}
+.tools{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.25rem}
+.tools input[type=search]{flex:1;min-width:200px;padding:.7rem .8rem;border:1px solid var(--line);border-radius:6px;font:inherit;background:#fff;color:var(--ink)}
+.tools input[type=search]:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(176,125,30,.25)}
+.chips{display:flex;gap:.4rem;flex-wrap:wrap}
+.chip{padding:.45rem .8rem;border:1px solid var(--line);border-radius:999px;background:#fff;font:500 .875rem var(--sans);cursor:pointer;color:var(--mute)}
+.chip[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
+.entries{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin:0 0 5rem;padding:0;list-style:none}
+.entry{display:grid;grid-template-columns:2.2fr 1.6fr auto;gap:1rem;align-items:center;padding:1rem 1.25rem;border-top:1px solid var(--line)}
+.entry:first-child{border-top:0}
+.site{font-weight:700;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.tag{font:500 .75rem var(--sans);padding:.1rem .5rem;border:1px solid var(--line);border-radius:999px;color:var(--mute)}
+.pin{color:var(--brass);font-size:.8rem;font-weight:500}
+.user{color:var(--mute);font-size:.95rem;word-break:break-all}
+.secret{font:500 .9rem var(--mono);letter-spacing:.05em;margin-top:.2rem;word-break:break-all}
+.notes{font-size:.85rem;color:var(--mute);margin:.25rem 0 0}
+.acts{display:flex;gap:.4rem;flex-wrap:wrap;justify-content:flex-end}
+.btn.del{color:var(--err);border-color:var(--line)}.btn.del:hover{border-color:var(--err)}
+.empty{background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:3rem 1.5rem;text-align:center;margin-bottom:5rem}
+.empty h2{font-size:1.5rem;margin-bottom:.5rem}.empty p{margin:0 0 1.25rem}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:1rem 1.25rem}
+.stat strong{display:block;font-size:2rem;line-height:1.1;letter-spacing:-.02em}
+.stat span{font-size:.9rem;color:var(--mute)}
+.stat.warn{border-left:3px solid var(--err)}.stat.warn strong{color:var(--err)}
+.tag.bad{color:var(--err);border-color:var(--err)}
+.acts form{margin:0}
+dialog{border:1px solid var(--line);border-radius:10px;padding:1.5rem;width:min(380px,100% - 2rem);color:var(--ink);background:var(--panel)}
+dialog::backdrop{background:rgba(20,32,43,.5)}
+dialog h2{font-size:1.4rem;margin-bottom:.4rem}
+#gateErr{min-height:1.3rem;margin:.25rem 0 .75rem;font-size:.9rem;color:var(--err)}
+.dlgbtns{display:flex;gap:.6rem;justify-content:flex-end}
+#none{display:none;padding:2rem;text-align:center;color:var(--mute)}
+@media(max-width:760px){.entry{grid-template-columns:1fr}.acts{justify-content:flex-start}.summary{grid-template-columns:1fr}}
+{% endblock %}
+{% block content %}
+{% with items=passwords|default:entries %}
+<div class="wrap">
+  <div class="head">
+    <div>
+      <h1>My vault</h1>
+      <p class="muted" style="margin:.5rem 0 0">{{ items|length }} saved login{{ items|length|pluralize }}</p>
+    </div>
+    <a class="btn" href="/#save">Save a password</a>
+  </div>
+
+  {% if items %}
+  <section class="summary" aria-label="Vault security summary">
+    <div class="stat"><strong>{{ summary.total }}</strong><span>Saved accounts</span></div>
+    <div class="stat{% if summary.reused %} warn{% endif %}"><strong>{{ summary.reused }}</strong><span>Reused password{{ summary.reused|pluralize }}</span></div>
+    <div class="stat{% if summary.weak %} warn{% endif %}"><strong>{{ summary.weak }}</strong><span>Weak password{{ summary.weak|pluralize }}</span></div>
+  </section>
+  <div class="tools">
+    <input type="search" id="q" placeholder="Search by site or username" aria-label="Search your vault">
+    <div class="chips" id="chips" role="group" aria-label="Filter by category"><button type="button" class="chip" data-cat="" aria-pressed="true">All</button></div>
+  </div>
+  <ul class="entries" id="list">
+    {% for e in items %}
+    <li class="entry" data-reveal="{% url 'reveal_password' e.pk %}" data-cat="{{ e.category|default:'' }}" data-text="{{ e.website|lower }} {{ e.username|lower }}">
+      <div>
+        <div class="site">{% if e.url %}<a href="{{ e.url }}" target="_blank" rel="noopener noreferrer">{{ e.website }}</a>{% else %}{{ e.website }}{% endif %}{% if e.category %}<span class="tag">{{ e.category }}</span>{% endif %}{% if e.is_favorite %}<span class="pin">Pinned</span>{% endif %}{% if e.is_reused %}<span class="tag bad">Reused</span>{% endif %}{% if e.is_weak %}<span class="tag bad">Weak</span>{% endif %}</div>
+        {% if e.notes %}<p class="notes">{{ e.notes }}</p>{% endif %}
+      </div>
+      <div>
+        <div class="user">{{ e.username }}</div>
+        <div class="secret">••••••••••••</div>
+      </div>
+      <div class="acts">
+        <button class="btn ghost sm" type="button" data-act="show" aria-pressed="false">Show</button>
+        <button class="btn ghost sm" type="button" data-act="copy">Copy</button>
+        <a class="btn ghost sm" href="{% url 'edit_password' e.pk %}">Edit</a>
+        <form method="post" action="{% url 'toggle_favorite' e.pk %}">{% csrf_token %}<button class="btn ghost sm" type="submit">{% if e.is_favorite %}Unpin{% else %}Pin{% endif %}</button></form>
+        {% url 'delete_password' e.pk as del_url %}
+        {% if del_url %}<form method="post" action="{{ del_url }}" onsubmit="return confirm('Delete the login for {{ e.website|escapejs }}? This can\'t be undone.')">{% csrf_token %}<button class="btn ghost sm del" type="submit">Delete</button></form>{% endif %}
+      </div>
+    </li>
+    {% endfor %}
+    <li id="none">No logins match your search.</li>
+  </ul>
+  <dialog id="gate" aria-labelledby="gateTitle">
+    <form id="gateForm" autocomplete="off">
+      {% csrf_token %}
+      <h2 id="gateTitle">Confirm it's you</h2>
+      <p class="muted" style="margin:0 0 1rem">Enter your master password to continue.</p>
+      <div class="field" style="margin-bottom:.25rem"><label for="gatePw">Master password</label>
+        <input type="password" id="gatePw" name="master_password" autocomplete="current-password" required></div>
+      <p id="gateErr" role="alert"></p>
+      <div class="dlgbtns"><button class="btn ghost sm" type="button" id="gateCancel">Cancel</button><button class="btn sm" type="submit">Confirm</button></div>
+    </form>
+  </dialog>
+  {% else %}
+  <div class="empty">
+    <h2>Your vault is empty</h2>
+    <p class="muted">Save your first login to see it here.</p>
+    <a class="btn" href="/#save">Save a password</a>
+  </div>
+  {% endif %}
+</div>
+{% endwith %}
+{% endblock %}
+{% block js %}
+<script>
+(function(){
+  var list=document.getElementById("list");if(!list)return;
+  var rows=[].slice.call(list.querySelectorAll(".entry")),q=document.getElementById("q"),chips=document.getElementById("chips"),cat="";
+  var cats=[];rows.forEach(function(r){var c=r.dataset.cat;if(c&&cats.indexOf(c)<0)cats.push(c)});
+  cats.sort().forEach(function(c){var b=document.createElement("button");b.type="button";b.className="chip";b.dataset.cat=c;b.setAttribute("aria-pressed","false");b.textContent=c;chips.appendChild(b)});
+  function apply(){var t=q.value.trim().toLowerCase(),n=0;rows.forEach(function(r){var ok=(!cat||r.dataset.cat===cat)&&r.dataset.text.indexOf(t)!==-1;r.style.display=ok?"":"none";if(ok)n++});document.getElementById("none").style.display=n?"none":"block"}
+  q.addEventListener("input",apply);
+  chips.addEventListener("click",function(e){var b=e.target.closest(".chip");if(!b)return;cat=b.dataset.cat;[].forEach.call(chips.children,function(c){c.setAttribute("aria-pressed",String(c===b))});apply()});
+  var MASK="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022",SHOW_MS=30000;
+  var gate=document.getElementById("gate"),gf=document.getElementById("gateForm"),gp=document.getElementById("gatePw"),ge=document.getElementById("gateErr"),pend=null,timers=[];
+  function hide(row){var s=row.querySelector(".secret"),b=row.querySelector("button[data-act=show]");s.textContent=MASK;b.textContent="Show";b.setAttribute("aria-pressed","false");
+    var k=rows.indexOf(row);if(timers[k]){clearTimeout(timers[k]);timers[k]=null}}
+  list.addEventListener("click",function(e){
+    var b=e.target.closest("button[data-act]");if(!b)return;
+    var row=b.closest(".entry");
+    if(b.dataset.act==="show"&&b.getAttribute("aria-pressed")==="true"){hide(row);return}
+    pend={row:row,btn:b,act:b.dataset.act};gp.value="";ge.textContent="";gate.showModal();gp.focus();
+  });
+  document.getElementById("gateCancel").addEventListener("click",function(){gate.close()});
+  gate.addEventListener("close",function(){gp.value="";pend=null});
+  gf.addEventListener("submit",function(ev){
+    ev.preventDefault();if(!pend)return;
+    var p=pend;
+    fetch(p.row.dataset.reveal,{method:"POST",body:new FormData(gf),credentials:"same-origin"})
+      .then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j}})})
+      .then(function(x){
+        if(!x.ok){ge.textContent=x.j.error||"Couldn't verify your password.";gp.select();return}
+        var pw=x.j.password;gate.close();
+        if(p.act==="show"){
+          var s=p.row.querySelector(".secret"),k=rows.indexOf(p.row);
+          s.textContent=pw;p.btn.textContent="Hide";p.btn.setAttribute("aria-pressed","true");
+          timers[k]=setTimeout(function(){hide(p.row)},SHOW_MS);
+        }else{
+          var old=p.btn.textContent;
+          (navigator.clipboard?navigator.clipboard.writeText(pw):Promise.reject()).then(function(){p.btn.textContent="Copied"},function(){p.btn.textContent="Use Show"});
+          setTimeout(function(){p.btn.textContent=old},1500);
+        }
+      })
+      .catch(function(){ge.textContent="Network error. Try again."});
+  });
+})();
+</script>
+{% endblock %}

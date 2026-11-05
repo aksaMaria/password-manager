@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% comment %} Save as: vault/templates/registration/login.html {% endcomment %}
+{% block title %}Sign in · BitVault{% endblock %}
+{% block content %}
+<div class="wrap auth">
+  <svg class="lock" viewBox="0 0 400 400" role="img" aria-label="Combination dial"><circle cx="200" cy="200" r="190" fill="#14202b"/><g id="ring" transform="rotate(35 200 200)"></g><circle cx="200" cy="200" r="112" fill="#1d2e3f" stroke="#33495f" stroke-width="2"/><text x="200" y="198" text-anchor="middle" font-family="Schibsted Grotesk,sans-serif" font-size="34" font-weight="700" fill="#fff">Locked</text><text x="200" y="228" text-anchor="middle" font-family="Schibsted Grotesk,sans-serif" font-size="15" fill="#aab5c0">Sign in to open</text><path d="M200 44 L190 14 L210 14 Z" fill="#b07d1e"/></svg>
+  <div>
+    <h1>Sign in to your vault</h1>
+    <p class="muted" style="margin:0 0 1.75rem">Use your username and master password.</p>
+    <form class="card" method="post" action="">
+      {% csrf_token %}
+      {% if form.errors %}<p class="alert error" role="alert">That username and password don't match. Check both and try again.</p>{% endif %}
+      <div class="field"><label for="id_username">Username</label>
+        <input type="text" name="username" id="id_username" autocomplete="username" autofocus required></div>
+      <div class="field"><label for="id_password">Password</label>
+        <div class="pwrow"><input type="password" name="password" id="id_password" autocomplete="current-password" required>
+        <button class="btn ghost sm" type="button" id="showPw" aria-pressed="false">Show</button></div></div>
+      <button class="btn block" type="submit">Sign in</button>
+      {% url 'register' as register_url %}{% if register_url %}<p class="alt">New to BitVault? <a href="{{ register_url }}">Create your vault</a></p>{% endif %}
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block js %}<script>bvTicks(document.getElementById("ring"));bvToggle(document.getElementById("showPw"),[document.getElementById("id_password")]);</script>{% endblock %}

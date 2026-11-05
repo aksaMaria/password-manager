@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Edit {{ entry.website }} · BitVault{% endblock %}
+{% block css %}
+.edit{max-width:640px;padding-block:3rem 5rem}
+.edit h1{font-size:clamp(1.8rem,3.5vw,2.5rem);margin-bottom:.5rem}
+.edit .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:1.75rem;margin-top:1.5rem}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:0 1rem}
+.edit .chk label{display:flex;gap:.5rem;align-items:center;font-weight:400;cursor:pointer}
+.edit .chk input{accent-color:var(--ink)}
+.btns{display:flex;gap:.75rem;flex-wrap:wrap}
+@media(max-width:640px){.row2{grid-template-columns:1fr}}
+{% endblock %}
+{% block content %}
+<div class="wrap edit">
+  {% if locked %}
+  <h1>Confirm it's you</h1>
+  <p class="muted">Enter your master password to edit the login for {{ entry.website }}.</p>
+  <form class="card" method="post" action="">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="unlock">
+    <div class="field"><label for="id_master">Master password</label>
+      <input type="password" id="id_master" name="master_password" autocomplete="current-password" autofocus required></div>
+    <div class="btns"><button class="btn" type="submit">Continue</button><a class="btn ghost" href="{% url 'vault_list' %}">Cancel</a></div>
+  </form>
+  {% else %}
+  <h1>Edit login</h1>
+  <p class="muted">Changes are saved when you press Save. Leave the password as it is to keep it.</p>
+  <form class="card" method="post" action="" autocomplete="off">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="save">
+    <div class="row2">
+      <div class="field"><label for="id_website">Website</label><input type="text" id="id_website" name="website" maxlength="100" value="{{ entry.website }}" required></div>
+      <div class="field"><label for="id_username">Username or email</label><input type="text" id="id_username" name="username" maxlength="150" value="{{ entry.username }}" required></div>
+    </div>
+    <div class="field"><label for="id_url">Site URL</label><input type="text" id="id_url" name="url" maxlength="300" inputmode="url" value="{{ entry.url }}" placeholder="https://example.com/login"></div>
+    <div class="field"><label for="id_password">Password</label>
+      <div class="pwrow"><input type="password" id="id_password" name="password" value="{{ password }}" autocomplete="new-password" required>
+      <button class="btn ghost sm" type="button" id="showPw" aria-pressed="false">Show</button></div>
+      <div class="meter" aria-hidden="true"><span id="pwBar"></span></div><p class="meter-label" id="pwLabel" aria-live="polite"></p></div>
+    <div class="row2">
+      <div class="field"><label for="id_category">Category</label><input type="text" id="id_category" name="category" maxlength="50" list="cats" value="{{ entry.category }}">
+        <datalist id="cats"><option value="Social"><option value="Banking"><option value="Work"><option value="Shopping"><option value="Email"></datalist></div>
+      <div class="field chk" style="justify-content:center"><label><input type="checkbox" name="is_favorite"{% if entry.is_favorite %} checked{% endif %}> Pin to the top of my vault</label></div>
+    </div>
+    <div class="field"><label for="id_notes">Notes</label><textarea id="id_notes" name="notes">{{ entry.notes }}</textarea></div>
+    <div class="btns"><button class="btn" type="submit">Save changes</button><a class="btn ghost" href="{% url 'vault_list' %}">Cancel</a></div>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}
+{% block js %}{% if not locked %}<script>
+var pf=document.getElementById("id_password");
+bvToggle(document.getElementById("showPw"),[pf]);bvMeter(pf,document.getElementById("pwBar"),document.getElementById("pwLabel"));
+</script>{% endif %}{% endblock %}
