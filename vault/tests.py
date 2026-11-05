@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
@@ -74,3 +75,8 @@ class VaultTests(TestCase):
         )
         s = self.client.get(reverse("vault_list")).context["summary"]
         self.assertEqual(s, {"total": 3, "reused": 2, "weak": 1})
+=======
+from django.test import TestCase
+
+# Create your tests here.
+>>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9

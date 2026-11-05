@@ -77,12 +77,19 @@
       {% csrf_token %}
       <div class="field"><label for="id_website">Website</label><input type="text" id="id_website" name="website" maxlength="100" placeholder="example.com" required></div>
       <div class="field"><label for="id_username">Username or email</label><input type="text" id="id_username" name="username" maxlength="150" required></div>
+<<<<<<< HEAD
       <div class="field wide"><label for="id_url">Site URL</label><input type="text" id="id_url" name="url" maxlength="300" inputmode="url" placeholder="https://example.com/login"></div>
       <div class="field wide"><label for="id_password">Password</label>
         <div class="pwrow"><input type="password" id="id_password" name="password" autocomplete="new-password" required>
         <button class="btn ghost sm" type="button" id="showPw" aria-pressed="false">Show</button>
         <button class="btn ghost sm" type="button" id="useGen">Use generated</button></div>
         <div class="meter" aria-hidden="true"><span id="pwBar"></span></div><p class="meter-label" id="pwLabel" aria-live="polite"></p></div>
+=======
+      <div class="field wide"><label for="id_password">Password</label>
+        <div class="pwrow"><input type="password" id="id_password" name="password" autocomplete="new-password" required>
+        <button class="btn ghost sm" type="button" id="showPw" aria-pressed="false">Show</button>
+        <button class="btn ghost sm" type="button" id="useGen">Use generated</button></div></div>
+>>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
       <div class="field"><label for="id_category">Category</label><input type="text" id="id_category" name="category" maxlength="50" list="cats" placeholder="Social, Banking, Work">
         <datalist id="cats"><option value="Social"><option value="Banking"><option value="Work"><option value="Shopping"><option value="Email"></datalist></div>
       <div class="field pin"><label><input type="checkbox" name="is_favorite"> Pin to the top of my vault</label></div>
@@ -132,7 +139,11 @@
     function(){$("pw").select();msg.className="error";msg.textContent="Couldn't copy automatically. Press Ctrl+C to copy."});
   });
   var useGen=$("useGen"),pf=$("id_password");
+<<<<<<< HEAD
   if(useGen&&pf){useGen.addEventListener("click",function(){pf.value=$("pw").value;pf.dispatchEvent(new Event("input"));pf.focus()});bvToggle($("showPw"),[pf]);bvMeter(pf,$("pwBar"),$("pwLabel"))}
+=======
+  if(useGen&&pf){useGen.addEventListener("click",function(){pf.value=$("pw").value;pf.focus()});bvToggle($("showPw"),[pf])}
+>>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
   generate();
 })();
 </script>

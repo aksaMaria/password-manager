@@ -50,9 +50,12 @@ footer{border-top:1px solid var(--line);padding:1.5rem 0;font-size:.875rem;color
 .lock{width:min(320px,70%);justify-self:center}
 @media(max-width:820px){.auth{grid-template-columns:1fr;gap:2rem;padding-block:2rem}.lock{display:none}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+<<<<<<< HEAD
 .meter{height:6px;border-radius:3px;background:var(--line);margin-top:.5rem;overflow:hidden}
 .meter span{display:block;height:100%;width:0;transition:width .2s,background .2s}
 .meter-label{font-size:.85rem;color:var(--mute);margin:.25rem 0 0;min-height:1.3rem}
+=======
+>>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
 {% block css %}{% endblock %}
 </style>
 </head>
@@ -77,6 +80,7 @@ footer{border-top:1px solid var(--line);padding:1.5rem 0;font-size:.875rem;color
 <footer><div class="wrap">BitVault is a learning project. Don't store real passwords in it until its encryption and sign-in have been reviewed.</div></footer>
 <script>
 function bvTicks(g){var s="";for(var i=0;i<60;i++){var m=i%5===0;s+='<line x1="200" y1="'+(m?20:28)+'" x2="200" y2="40" stroke="'+(m?"#b07d1e":"#7d8a97")+'" stroke-width="'+(m?3:1.5)+'" transform="rotate('+i*6+' 200 200)"/>'}g.innerHTML=s}
+<<<<<<< HEAD
 var BV_COMMON=["password","password1","password123","12345678","123456789","1234567890","qwertyuiop","qwerty123","iloveyou","admin123","letmein123","welcome123"];
 /* Keep in sync with password_strength() in vault/utils.py */
 function bvStrength(p){
@@ -93,6 +97,8 @@ function bvMeter(input,bar,label){
     var c=C[s];bar.style.width=c[1];bar.style.background=c[0];label.textContent="Strength: "+c[2]}
   input.addEventListener("input",update);update();
 }
+=======
+>>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
 function bvToggle(btn,inputs){btn.addEventListener("click",function(){var h=inputs[0].type==="password";inputs.forEach(function(i){i.type=h?"text":"password"});btn.textContent=h?"Hide":"Show";btn.setAttribute("aria-pressed",String(h))})}
 </script>
 {% block js %}{% endblock %}
