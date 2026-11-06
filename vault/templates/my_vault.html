@@ -28,7 +28,6 @@
 .btn.del{color:var(--err);border-color:var(--line)}.btn.del:hover{border-color:var(--err)}
 .empty{background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:3rem 1.5rem;text-align:center;margin-bottom:5rem}
 .empty h2{font-size:1.5rem;margin-bottom:.5rem}.empty p{margin:0 0 1.25rem}
-<<<<<<< HEAD
 .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
 .stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:1rem 1.25rem}
 .stat strong{display:block;font-size:2rem;line-height:1.1;letter-spacing:-.02em}
@@ -43,10 +42,8 @@ dialog h2{font-size:1.4rem;margin-bottom:.4rem}
 .dlgbtns{display:flex;gap:.6rem;justify-content:flex-end}
 #none{display:none;padding:2rem;text-align:center;color:var(--mute)}
 @media(max-width:760px){.entry{grid-template-columns:1fr}.acts{justify-content:flex-start}.summary{grid-template-columns:1fr}}
-=======
 #none{display:none;padding:2rem;text-align:center;color:var(--mute)}
 @media(max-width:760px){.entry{grid-template-columns:1fr}.acts{justify-content:flex-start}}
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
 {% endblock %}
 {% block content %}
 {% with items=passwords|default:entries %}
@@ -60,47 +57,35 @@ dialog h2{font-size:1.4rem;margin-bottom:.4rem}
   </div>
 
   {% if items %}
-<<<<<<< HEAD
   <section class="summary" aria-label="Vault security summary">
     <div class="stat"><strong>{{ summary.total }}</strong><span>Saved accounts</span></div>
     <div class="stat{% if summary.reused %} warn{% endif %}"><strong>{{ summary.reused }}</strong><span>Reused password{{ summary.reused|pluralize }}</span></div>
     <div class="stat{% if summary.weak %} warn{% endif %}"><strong>{{ summary.weak }}</strong><span>Weak password{{ summary.weak|pluralize }}</span></div>
   </section>
-=======
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
   <div class="tools">
     <input type="search" id="q" placeholder="Search by site or username" aria-label="Search your vault">
     <div class="chips" id="chips" role="group" aria-label="Filter by category"><button type="button" class="chip" data-cat="" aria-pressed="true">All</button></div>
   </div>
   <ul class="entries" id="list">
     {% for e in items %}
-<<<<<<< HEAD
     <li class="entry" data-reveal="{% url 'reveal_password' e.pk %}" data-cat="{{ e.category|default:'' }}" data-text="{{ e.website|lower }} {{ e.username|lower }}">
       <div>
         <div class="site">{% if e.url %}<a href="{{ e.url }}" target="_blank" rel="noopener noreferrer">{{ e.website }}</a>{% else %}{{ e.website }}{% endif %}{% if e.category %}<span class="tag">{{ e.category }}</span>{% endif %}{% if e.is_favorite %}<span class="pin">Pinned</span>{% endif %}{% if e.is_reused %}<span class="tag bad">Reused</span>{% endif %}{% if e.is_weak %}<span class="tag bad">Weak</span>{% endif %}</div>
-=======
     <li class="entry" data-cat="{{ e.category|default:'' }}" data-text="{{ e.website|lower }} {{ e.username|lower }}">
       <div>
         <div class="site">{{ e.website }}{% if e.category %}<span class="tag">{{ e.category }}</span>{% endif %}{% if e.is_favorite %}<span class="pin">Pinned</span>{% endif %}</div>
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
         {% if e.notes %}<p class="notes">{{ e.notes }}</p>{% endif %}
       </div>
       <div>
         <div class="user">{{ e.username }}</div>
-<<<<<<< HEAD
         <div class="secret">••••••••••••</div>
-=======
         <div class="secret" data-secret="{{ e.password }}">••••••••••••</div>
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
       </div>
       <div class="acts">
         <button class="btn ghost sm" type="button" data-act="show" aria-pressed="false">Show</button>
         <button class="btn ghost sm" type="button" data-act="copy">Copy</button>
-<<<<<<< HEAD
         <a class="btn ghost sm" href="{% url 'edit_password' e.pk %}">Edit</a>
         <form method="post" action="{% url 'toggle_favorite' e.pk %}">{% csrf_token %}<button class="btn ghost sm" type="submit">{% if e.is_favorite %}Unpin{% else %}Pin{% endif %}</button></form>
-=======
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
         {% url 'delete_password' e.pk as del_url %}
         {% if del_url %}<form method="post" action="{{ del_url }}" onsubmit="return confirm('Delete the login for {{ e.website|escapejs }}? This can\'t be undone.')">{% csrf_token %}<button class="btn ghost sm del" type="submit">Delete</button></form>{% endif %}
       </div>
@@ -108,7 +93,6 @@ dialog h2{font-size:1.4rem;margin-bottom:.4rem}
     {% endfor %}
     <li id="none">No logins match your search.</li>
   </ul>
-<<<<<<< HEAD
   <dialog id="gate" aria-labelledby="gateTitle">
     <form id="gateForm" autocomplete="off">
       {% csrf_token %}
@@ -120,8 +104,6 @@ dialog h2{font-size:1.4rem;margin-bottom:.4rem}
       <div class="dlgbtns"><button class="btn ghost sm" type="button" id="gateCancel">Cancel</button><button class="btn sm" type="submit">Confirm</button></div>
     </form>
   </dialog>
-=======
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
   {% else %}
   <div class="empty">
     <h2>Your vault is empty</h2>
@@ -142,7 +124,6 @@ dialog h2{font-size:1.4rem;margin-bottom:.4rem}
   function apply(){var t=q.value.trim().toLowerCase(),n=0;rows.forEach(function(r){var ok=(!cat||r.dataset.cat===cat)&&r.dataset.text.indexOf(t)!==-1;r.style.display=ok?"":"none";if(ok)n++});document.getElementById("none").style.display=n?"none":"block"}
   q.addEventListener("input",apply);
   chips.addEventListener("click",function(e){var b=e.target.closest(".chip");if(!b)return;cat=b.dataset.cat;[].forEach.call(chips.children,function(c){c.setAttribute("aria-pressed",String(c===b))});apply()});
-<<<<<<< HEAD
   var MASK="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022",SHOW_MS=30000;
   var gate=document.getElementById("gate"),gf=document.getElementById("gateForm"),gp=document.getElementById("gatePw"),ge=document.getElementById("gateErr"),pend=null,timers=[];
   function hide(row){var s=row.querySelector(".secret"),b=row.querySelector("button[data-act=show]");s.textContent=MASK;b.textContent="Show";b.setAttribute("aria-pressed","false");
@@ -174,13 +155,11 @@ dialog h2{font-size:1.4rem;margin-bottom:.4rem}
         }
       })
       .catch(function(){ge.textContent="Network error. Try again."});
-=======
   list.addEventListener("click",function(e){
     var b=e.target.closest("button[data-act]");if(!b)return;
     var row=b.closest(".entry"),s=row.querySelector(".secret");
     if(b.dataset.act==="show"){var on=b.getAttribute("aria-pressed")!=="true";s.textContent=on?s.dataset.secret:"••••••••••••";b.textContent=on?"Hide":"Show";b.setAttribute("aria-pressed",String(on))}
     else{var old=b.textContent;(navigator.clipboard?navigator.clipboard.writeText(s.dataset.secret):Promise.reject()).then(function(){b.textContent="Copied"},function(){b.textContent="Press Ctrl+C"});setTimeout(function(){b.textContent=old},1500)}
->>>>>>> f7afbfc80dc290ae0928d759401a05edb8d2c3c9
   });
 })();
 </script>
